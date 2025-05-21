@@ -5,7 +5,20 @@ import matplotlib as mpl
 
 plt.style.use('fivethirtyeight')
 mpl.rcParams['lines.linewidth'] = 2.0
+mpl.rcParams['figure.facecolor'] = "None"
+mpl.rcParams['axes.facecolor'] = "None"
 
+def get_mag_spectrum(x):
+	N = len(x)
+	magnitude = 2 * np.abs(np.fft.fft(x)) / N
+	magnitude[0] = magnitude[0] / 2
+	frequencies = np.fft.fftfreq(N, d=Ts)
+	return frequencies, magnitude
+
+def apply_lowpass_filter(signal, cutoff):
+	k = np.abs(np.fft.fft(signal))
+	k[cutoff:] = 0
+	return np.fft.ifft(k).real
 
 fs = 1000 	# sampling frequency
 Ts = 1 / fs # sampling interval
@@ -36,11 +49,7 @@ axs[2].set_xlabel("Time (s)")
 
 # Frequency spectrum
 fig, axs = plt.subplots(2, 1, layout="constrained")
-magnitude = np.abs(np.fft.fft(dsbsc)) / N * 2
-magnitude[0] = magnitude[0] / 2
-frequencies = np.fft.fftfreq(N, d=Ts)
-oneside = len(frequencies) 
-axs[0].stem(frequencies[:oneside], magnitude[:oneside], markerfmt="")
+axs[0].stem(*get_mag_spectrum(dsbsc), markerfmt="")
 axs[0].set_ylabel("Amplitude")
 axs[0].set_xlabel("Frequency (Hz)")
 axs[0].set_title("DSBSC Signal Spectrum")
@@ -48,10 +57,6 @@ axs[0].set_xlim(-30, 30)
 
 # Demodulation of DSBSC signal
 demodulated_wave = dsbsc * carrier
-def apply_lowpass_filter(signal, cutoff):
-	k = np.abs(np.fft.fft(signal))
-	k[cutoff:] = 0
-	return np.fft.ifft(k).real
 axs[1].plot(t, apply_lowpass_filter(demodulated_wave, 4*fm))
 axs[1].set_title("Demodulated Message")
 axs[1].set_xlabel("Time (s)")

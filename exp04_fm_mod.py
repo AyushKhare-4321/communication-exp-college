@@ -1,6 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 
+plt.style.use("fivethirtyeight")
+mpl.rcParams["lines.linewidth"] = 2
+mpl.rcParams["axes.facecolor"] = "None"
+mpl.rcParams["figure.facecolor"] = "None"
+
+def get_mag_spectrum(x):
+	N = len(x)
+	magnitude = 2 * np.abs(np.fft.fft(x)) / N
+	magnitude[0] = magnitude[0] / 2
+	frequencies = np.fft.fftfreq(N, d=Ts)
+	return frequencies, magnitude
 
 fs = 300 	# sampling frequency
 Ts = 1 / fs # sampling interval
@@ -37,12 +49,6 @@ axs[2].set_xlabel("Time (s)")
 
 # Frequency spectrum
 fig, ax = plt.subplots(1, figsize=(12, 4))
-def get_mag_spectrum(x):
-	N = len(x)
-	magnitude = 2 * np.abs(np.fft.fft(x)) / N
-	magnitude[0] = magnitude[0] / 2
-	frequencies = np.fft.fftfreq(N, d=Ts)
-	return frequencies, magnitude
 ax.stem(*get_mag_spectrum(fm_mod), markerfmt="")
 ax.set_xlabel("Frequency");
 ax.set_ylabel("Amplitude");
