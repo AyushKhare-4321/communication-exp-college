@@ -4,8 +4,8 @@ import matplotlib as mpl
 
 plt.style.use("fivethirtyeight")
 mpl.rcParams["lines.linewidth"] = 2
-mpl.rcParams["axes.facecolor"] = "None"
-mpl.rcParams["figure.facecolor"] = "None"
+mpl.rcParams["axes.facecolor"] = "white"
+mpl.rcParams["figure.facecolor"] = "white"
 
 def get_mag_spectrum(x):
 	N = len(x)

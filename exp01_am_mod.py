@@ -1,13 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from math import ceil
 import matplotlib as mpl
 
 
 plt.style.use('ggplot')
 mpl.rcParams['lines.linewidth'] = 2.0
-mpl.rcParams['figure.facecolor'] = "None"
-mpl.rcParams['axes.facecolor'] = "None"
+mpl.rcParams['figure.facecolor'] = "white"
+mpl.rcParams['axes.facecolor'] = "white"
 mpl.rcParams['grid.color'] = "k"
 mpl.rcParams['grid.alpha'] = 0.5
 

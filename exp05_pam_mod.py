@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as	plt
+from scipy.signal import square
 import matplotlib as mpl
 
 
@@ -17,21 +18,22 @@ def get_mag_spectrum(x):
 
 def apply_lowpass_filter(signal, cutoff):
 	k = np.abs(np.fft.fft(signal))
+	# _, k = get_mag_spectrum(signal)
 	k[cutoff:] = 0
 	return np.fft.ifft(k).real
 
-fs = 1000 	# sampling frequency
+fs = 300 	# sampling frequency
 Ts = 1 / fs # sampling interval
-t = np.arange(0, 3, Ts)
+t = np.arange(0, 2, Ts)
 N = len(t)
 fm = 3
-fc = 20
-am = 1
-ac = 2
+fc = 25
+am = 3
+ac = 5
 
-message = am * np.cos(2 * np.pi * fm * t)
-carrier = ac * np.cos(2 * np.pi * fc * t)
-dsbsc = message * carrier
+message = am + am * np.sin(2 * np.pi * fm * t)
+carrier = ac + ac * square(2 * np.pi * fc * t)
+pam_mod = message * carrier
 
 fig, axs = plt.subplots(3, 1, sharex=True, layout="constrained")
 for ax in axs.flatten():
@@ -43,23 +45,14 @@ axs[0].set_title("Message Signal")
 axs[1].plot(t, carrier)
 axs[1].set_title("Carrier Signal")
 
-axs[2].plot(t, dsbsc)
-axs[2].set_title("Amplitude Modulated Signal")
+axs[2].plot(t, pam_mod)
+axs[2].set_title("Pulse Amplitude Modulated Signal")
 axs[2].set_xlabel("Time (s)")
+axs[2].set_xlim(0, 1.5)
 
-# Frequency spectrum
-fig, axs = plt.subplots(2, 1, layout="constrained")
-axs[0].stem(*get_mag_spectrum(dsbsc), markerfmt="")
-axs[0].set_ylabel("Amplitude")
-axs[0].set_xlabel("Frequency (Hz)")
-axs[0].set_title("DSBSC Signal Spectrum")
-axs[0].set_xlim(-30, 30)
-
-# Demodulation of DSBSC signal
-demodulated_wave = dsbsc * carrier
-axs[1].plot(t, apply_lowpass_filter(demodulated_wave, 4*fm))
-axs[1].set_title("Demodulated Message")
-axs[1].set_xlabel("Time (s)")
-axs[1].set_ylabel("Amplitude")
+# Demodulation of PAM signal
+demodulated_wave = pam_mod * carrier
+fig, ax = plt.subplots()
+ax.plot(t, apply_lowpass_filter(demodulated_wave, 3*fm))
 
 plt.show()
